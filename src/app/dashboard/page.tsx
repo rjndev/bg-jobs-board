@@ -1,7 +1,15 @@
+"use client";
+
 import FilterSection from "./_sections/FilterSection";
 import CardSection from "./_sections/CardSection";
+import { useSession } from "next-auth/react";
+
 
 export default function Dashboard(){
+  const {data : session} = useSession();
+
+  console.log("Session data:", session);
+
   return(
     <div className="flex flex-col gap-12 justify-center items-center p-8 pb-20">
       <FilterSection />
