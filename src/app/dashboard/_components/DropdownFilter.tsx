@@ -11,9 +11,9 @@ type FilterProps = {
 export default function DropdownFilter({ title, options } : FilterProps) {
 
   return (
-    <div className="border flex flex-col gap-1 border-gray-300 max-w-[300px] rounded-lg px-4 py-2">
+    <div className="border flex flex-col gap-1 border-gray-300 xl:max-w-[300px] rounded-lg px-4 py-2 w-full">
         {<p className="font-semibold">{title}</p>}
-        <select className="p-2 outline-none border w-[200px] border-gray-300 rounded-lg">
+        <select className="p-2 outline-none border w-full border-gray-300 rounded-lg">
             {
               options.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>

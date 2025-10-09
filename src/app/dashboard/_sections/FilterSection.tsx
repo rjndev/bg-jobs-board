@@ -5,7 +5,7 @@ import SearchFilter from "../_components/SearchFilter";
 
 export default function FilterSection() {
   return (
-    <div className="flex gap-8">
+    <div className="flex xl:flex-row gap-8 flex-col w-full justify-between px-8">
       <DropdownFilter title="Title" options={titleOptions} />
       <DropdownFilter title="State" options={stateOptions} />
       <DateFilter title="Start Date" />
