@@ -15,6 +15,15 @@ const sampleCards = [
     hospital: "City Hospital",
     job: "Registered Nurse",
     location: "New York, NY",
+    rate: "$45/hr",                   
+    shiftType: "Day",
+    dateStart: "2023-10-01",
+    dateEnd: "2023-10-15"
+  },
+  {
+    hospital: "City Hospital",
+    job: "Registered Nurse",
+    location: "New York, NY",
     rate: "$45/hr",
     shiftType: "Day",
     dateStart: "2023-10-01",
