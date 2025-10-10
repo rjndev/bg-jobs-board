@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useAuth} from "@/hooks/authHooks";
