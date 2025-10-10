@@ -13,7 +13,10 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const { handleLogin, error, fetching } = useAuth(email, password)
 
-  console.log("Fetching ", fetching)
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await handleLogin()
+  }
 
   if (session)
     redirect("/dashboard");
@@ -21,7 +24,7 @@ export default function Login() {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 items-center justify-center min-h-screen">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-center justify-center min-h-screen">
         <h1 className="font-bold text-lg">BG Locum Mailer Login</h1>
 
         <div className="flex flex-col gap-4">
@@ -44,13 +47,13 @@ export default function Login() {
           <button
             className="bg-blue-600 text-white rounded-md mt-4 py-1 px-4 font-semibold hover:cursor-pointer hover:bg-blue-500 transition-colors duration-300 ease-in-out disabled:bg-gray-500"
             disabled={email == "" || password == ""}
-            onClick={handleLogin}>
+            type="submit">
               Login
             </button>
           )
         }
-        
-      </div>
+
+      </form>
     </div>
   )
 }
