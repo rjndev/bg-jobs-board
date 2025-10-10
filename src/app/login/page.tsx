@@ -1,9 +1,16 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 
 export default function Login() {
+  const { data: session } = useSession();
+
+  if (session)
+    redirect("/dashboard");
+
   const handleLogin = async () => {
     const email = (document.getElementById("username") as HTMLInputElement).value;
     const password = (document.getElementById("password") as HTMLInputElement).value;

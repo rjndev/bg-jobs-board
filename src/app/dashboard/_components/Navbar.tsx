@@ -1,3 +1,7 @@
+"use client";
+
+import { signOut } from "next-auth/react";
+
 export default function Navbar(){
   return(
     <div className="flex justify-between py-4 px-8 border border-gray-300 w-full">
@@ -5,8 +9,9 @@ export default function Navbar(){
         BG Locum Mailer
       </div>
 
-      <div>
+      <div className="flex flex-col">
         Hello, RJ
+        <button onClick={async () => await signOut()} className="text-sm hover:cursor-pointer text-blue-500 underline">Logout</button>
       </div>
     </div>
   );

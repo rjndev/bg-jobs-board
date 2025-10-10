@@ -1,12 +1,11 @@
 import Navbar from "./_components/Navbar";
+import ProtectedRoute from "../_providers/protected-route";
 
 export default function Layout({children} : {children : React.ReactNode}){
   return(
-    <html lang="en">
-      <body className="w-full">
-        <Navbar />
-        {children}
-      </body>
-    </html>
+    <ProtectedRoute>
+      <Navbar />
+      {children}
+    </ProtectedRoute>
   );
 }
