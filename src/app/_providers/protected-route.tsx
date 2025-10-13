@@ -1,17 +1,16 @@
-"use client"; 
-
-import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { createClient } from "@/utlis/supabase/supabase-server";
 
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+export default async function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  // const { status } = useSession();
+  const supabase = await createClient()
+  const { data, error } = await supabase.auth.getClaims();
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+  console.log("Protected route - user claims:", {data, error})
 
-  if (status === "unauthenticated") {
+  if (error || !data?.claims) {
+    console.error("Error fetching user claims:", error);
     return redirect("/login");
   }
 
