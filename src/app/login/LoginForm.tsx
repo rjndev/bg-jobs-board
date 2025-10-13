@@ -10,11 +10,11 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { handleLogin, error, fetching } = useAuth(email, password)
+  const { handleLogin, error, fetching } = useAuth()
 
   const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const res = await handleLogin()
+    const res = await handleLogin(email, password)
 
     if (res?.ok)
       redirect("/dashboard")

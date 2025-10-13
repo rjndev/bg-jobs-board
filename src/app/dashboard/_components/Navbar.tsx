@@ -1,15 +1,9 @@
 "use client";
 
-import { createClient } from "@/utlis/supabase/supabase-client";
-import { redirect } from "next/navigation";
+import { useAuth } from "@/hooks/authHooks";
 
 export default function Navbar(){
-  const supabase = createClient();
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    redirect("/login");
-  }
+  const { handleSignout } = useAuth();
 
   return(
     <div className="flex justify-between py-4 px-8 border border-gray-300 w-full">
@@ -19,7 +13,7 @@ export default function Navbar(){
 
       <div className="flex flex-col">
         Hello, RJ
-        <button onClick={handleSignOut} className="text-sm hover:cursor-pointer text-blue-500 underline">Logout</button>
+        <button onClick={handleSignout} className="text-sm hover:cursor-pointer text-blue-500 underline">Logout</button>
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { createClient } from "@/utlis/supabase/supabase-client";
+import { redirect } from "next/navigation";
 
-export function useAuth(email : string, password : string) {
+export function useAuth() {
   const [error, setError] = useState(false);
   const [fetching, setFetching] = useState(false)
 
-  const handleLogin = async () => {
+  const handleLogin = async (email : string, password : string) => {
     setFetching(true)
     setError(false)
 
@@ -31,5 +31,14 @@ export function useAuth(email : string, password : string) {
     }
   }
 
-  return { handleLogin, error, fetching }
+
+  const handleSignout = async () => {
+    const supabase = createClient();
+    
+    await supabase.auth.signOut();
+    
+    redirect("/login")
+  }
+
+  return { handleLogin, handleSignout, error, fetching }
 } 
