@@ -1,21 +1,21 @@
 export const titleOptions = [
-  { value: "option1", label: "All" },
-  { value: "option2", label: "Emergency" },
-  { value: "option3", label: "ED" },
-  { value: "option4", label: "GP ED" },
-  { value: "option5", label: "GP A" },
-  { value: "option6", label: "GP O" },
-  { value: "option7", label: "Psych" },
-  { value: "option8", label: "GP Only" }
+  { value: "all", label: "All" },
+  { value: "emergency", label: "Emergency" },
+  { value: "ED", label: "ED" },
+  { value: "GP ED", label: "GP ED" },
+  { value: "GP A", label: "GP A" },
+  { value: "GP O", label: "GP O" },
+  { value: "Psych", label: "Psych" },
+  { value: "GP Only", label: "GP Only" }
 ]
 
 export const stateOptions = [
-  { value: "option1", label: "All" },
-  { value: "option2", label: "NSW" },
-  { value: "option3", label: "NT" },
-  { value: "option4", label: "QLD" },
-  { value: "option5", label: "SA" },
-  { value: "option6", label: "TAS" },
-  { value: "option7", label: "VIC" },
-  { value: "option8", label: "WA" }
+  { value: "all", label: "All" },
+  { value: "nsw", label: "NSW" },
+  { value: "nt", label: "NT" },
+  { value: "qld", label: "QLD" },
+  { value: "sa", label: "SA" },
+  { value: "tas", label: "TAS" },
+  { value: "vic", label: "VIC" },
+  { value: "wa", label: "WA" }
 ]

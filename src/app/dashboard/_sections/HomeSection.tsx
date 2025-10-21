@@ -1,70 +1,18 @@
 import FilterSection from "./FilterSection"
 import CardSection from "./CardSection"
+import { Job } from "@/types/job-types"
 
-export default function HomeSection() {
+type HomeSectionProps = {
+  jobs : Job[] | undefined,
+  isLoading : boolean
+}
+
+export default function HomeSection({jobs, isLoading} : HomeSectionProps) {
   return (
     <div>
-      <div className="flex flex-col gap-12 justify-center items-center p-8 pb-20">
-        <FilterSection />
-        <CardSection cards={sampleCards} />
+      <div className="flex flex-col gap-12 justify-center items-center p-8 mt-4 pb-20">
+        <CardSection isLoading={isLoading} cards={jobs} />
       </div>      
     </div>
   )
 }
-
-const sampleCards = [
-  {
-    hospital: "City Hospital",
-    job: "Registered Nurse",
-    location: "New York, NY",
-    rate: "$45/hr",                   
-    shiftType: "Day",
-    dateStart: "2023-10-01",
-    dateEnd: "2023-10-15"
-  },
-  {
-    hospital: "City Hospital",
-    job: "Registered Nurse",
-    location: "New York, NY",
-    rate: "$45/hr",
-    shiftType: "Day",
-    dateStart: "2023-10-01",
-    dateEnd: "2023-10-15"
-  },
-  {
-    hospital: "City Hospital",
-    job: "Registered Nurse",
-    location: "New York, NY",
-    rate: "$45/hr",
-    shiftType: "Day",
-    dateStart: "2023-10-01",
-    dateEnd: "2023-10-15"
-  },
-  {
-    hospital: "City Hospital",
-    job: "Registered Nurse",
-    location: "New York, NY",
-    rate: "$45/hr",
-    shiftType: "Day",
-    dateStart: "2023-10-01",
-    dateEnd: "2023-10-15"
-  },
-  {
-    hospital: "City Hospital",
-    job: "Registered Nurse",
-    location: "New York, NY",
-    rate: "$45/hr",
-    shiftType: "Day",
-    dateStart: "2023-10-01",
-    dateEnd: "2023-10-15"
-  },
-  {
-    hospital: "City Hospital",
-    job: "Registered Nurse",
-    location: "New York, NY",
-    rate: "$45/hr",
-    shiftType: "Day",
-    dateStart: "2023-10-01",
-    dateEnd: "2023-10-15"
-  }
-]
