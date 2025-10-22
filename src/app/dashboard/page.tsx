@@ -29,7 +29,7 @@ export default function Dashboard(){
         setFilters={setFilters}
       />
       { tab == "home" && <HomeSection isLoading={isLoading} jobs={jobs} />}
-      { tab == "map" && <MapSection />}
+      { tab == "map" && <MapSection jobs={jobs!} />}
     </div>
   );
 }

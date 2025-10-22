@@ -16,6 +16,7 @@ export async function GET(request : NextRequest) {
   const limitParam = request.nextUrl.searchParams.get("limit");
   const state = request.nextUrl.searchParams.get("state")
   const title = request.nextUrl.searchParams.get("title")
+
   const limit = limitParam ? parseInt(limitParam) : 20;
 
   let query = supabase.from("jobs").select("*").order("created_at", { ascending: false });

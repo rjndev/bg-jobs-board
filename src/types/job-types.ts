@@ -1,4 +1,5 @@
 export type Job = {
+  id: string;
   facility: string;
   job: string;
   location: string;
@@ -8,4 +9,6 @@ export type Job = {
   shiftType : "Day" | "Night" | "Evening" | "Flexible";
   createdAt: Date;
   state : string;
+  lat : number;
+  long : number;
 }
