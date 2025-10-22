@@ -7,6 +7,9 @@ import { useJobs } from "@/hooks/jobsHooks";
 import { useState } from "react";
 import FilterSection from "./_sections/FilterSection";
 import { FiltersType } from "./_sections/FilterSection";
+import { ViewOptions } from "./_components/ViewOptions";
+
+
 
 
 export default function Dashboard(){
@@ -21,6 +24,7 @@ export default function Dashboard(){
   })
   const { res, isLoading } = useJobs(filters);
   const jobs = res?.jobs
+  const [isList , setIsList] = useState(false)
 
   return(
     <div>
@@ -28,6 +32,12 @@ export default function Dashboard(){
         filters={filters}
         setFilters={setFilters}
       />
+
+      <span className="flex justify-between mt-8 items-center px-8">
+        <h1 className="text-xl h-full text-center self-center">Jobs Available today! 🚀</h1>
+        <ViewOptions isList={isList} setIsList={setIsList} />
+      </span>
+
       { tab == "home" && <HomeSection isLoading={isLoading} jobs={jobs} />}
       { tab == "map" && <MapSection jobs={jobs!} />}
     </div>
