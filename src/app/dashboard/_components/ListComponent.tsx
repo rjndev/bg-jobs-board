@@ -1,11 +1,11 @@
 export default function ListComponent() {
   return (
-    <tr className="rounded-md flex justify-around py-2 w-full max-w-[1400px] border-gray-300 border-b">
-      <span className="font-bold">Job</span>
-      <span>asdasdasdasdasdassdjfhsajfbasdkjfhsakldjfhaskdjfhkasjlfhaskjfhsd</span>
-      <span>Date</span>
-      <span>Rate</span>
-      <span>Shift</span>
+    <tr className="border-gray-300 border-b">
+      <th className="py-4 font-bold text-center">Job</th>
+      <td className="text-center">asdasdqweqwe</td>
+      <td className="text-center">Date</td>
+      <td className="text-center">Rate</td>
+      <td className="text-center">Shift</td>
     </tr>
   )
 }

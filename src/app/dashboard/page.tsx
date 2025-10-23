@@ -10,8 +10,6 @@ import { FiltersType } from "./_sections/FilterSection";
 import { ViewOptions } from "./_components/ViewOptions";
 
 
-
-
 export default function Dashboard(){
   const { tab } = useTab();
   const [filters , setFilters] = useState<FiltersType>({
