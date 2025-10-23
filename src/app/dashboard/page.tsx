@@ -38,9 +38,9 @@ export default function Dashboard(){
         <ViewOptions isList={isList} setIsList={setIsList} />
       </span>
 
-      { tab == "home" && <HomeSection isLoading={isLoading} jobs={jobs} />}
+      { tab == "home" && <HomeSection isList={isList} isLoading={isLoading} jobs={jobs} />}
       { tab == "map" && <MapSection jobs={jobs!} />}
     </div>
-  );
+  );      
 }
 
