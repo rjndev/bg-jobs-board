@@ -9,9 +9,6 @@ export type CardSectionProps = {
 
 export default function CardSection({ cards, isLoading }: CardSectionProps) {
 
-  if(cards?.length! == 0 && !isLoading) return <p className="mx-auto">There are no available cards.</p>
-  if(isLoading) return <AiOutlineLoading3Quarters className="animate-spin inline-block" size={20} />
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {
