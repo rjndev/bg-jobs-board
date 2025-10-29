@@ -11,7 +11,6 @@ import { ViewOptions } from "./_components/ViewOptions";
 
 
 export default function Dashboard(){
-  const { tab } = useTab();
   const [filters , setFilters] = useState<FiltersType>({
     job : undefined,
     state : undefined,
@@ -23,6 +22,13 @@ export default function Dashboard(){
   const { res, isLoading } = useJobs(filters);
   const jobs = res?.jobs
   const [isList , setIsList] = useState(false)
+  const [zoomTo, setZoomTo] = useState<number[] | null>(null);
+  const { tab, router } = useTab();
+
+  const  zoomToJobLocation = (location : number[]) => {
+    setZoomTo(location);
+    router.replace("/dashboard?tab=map");
+  }
 
   return(
     <div>
@@ -36,8 +42,8 @@ export default function Dashboard(){
         <ViewOptions isList={isList} setIsList={setIsList} />
       </span>
 
-      { tab == "home" && <HomeSection isList={isList} isLoading={isLoading} jobs={jobs} />}
-      { tab == "map" && <MapSection jobs={jobs!} />}
+      { tab == "home" && <HomeSection zoomToJobLocation={zoomToJobLocation} isList={isList} isLoading={isLoading} jobs={jobs} />}
+      { tab == "map" && <MapSection zoomTo={zoomTo} jobs={jobs!} />}
     </div>
   );      
 }

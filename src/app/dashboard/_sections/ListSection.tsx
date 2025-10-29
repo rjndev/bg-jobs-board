@@ -1,12 +1,29 @@
+import { Job } from "@/types/job-types"
 import ListComponent from "../_components/ListComponent"
 
-export default function ListSection() {
+
+type ListSectionProps = {
+  jobs : Job[],
+  isLoading : boolean,
+  zoomToJobLocation : (location: number[]) => void
+}
+
+export default function ListSection({ jobs , isLoading, zoomToJobLocation } : ListSectionProps) {
+
   return (
     <table className="w-full">
       <Header />
       <tbody>
-        <ListComponent/>
-        <ListComponent/>
+        {
+          jobs && jobs.map(job => (
+            <ListComponent
+              zoomToJobLocation={zoomToJobLocation}
+              key={job.id} 
+              job={job}
+            />
+          ) 
+        )
+        }
       </tbody>
     </table>
   )

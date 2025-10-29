@@ -4,10 +4,11 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export type CardSectionProps = {
   cards : Job[] | undefined,
-  isLoading : boolean
+  isLoading : boolean,
+  zoomToJobLocation : (location: number[]) => void
 }
 
-export default function CardSection({ cards, isLoading }: CardSectionProps) {
+export default function CardSection({ cards, isLoading, zoomToJobLocation}: CardSectionProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -19,9 +20,12 @@ export default function CardSection({ cards, isLoading }: CardSectionProps) {
             job={card.job}
             location={card.location}
             rate={card.rate}
-            shiftType={card.shiftType}
-            dateStart={card.startDate?.toDateString()}
-            dateEnd={card.endDate?.toDateString()}
+            shiftType={card.shift_type}
+            dateStart={new Date(card.start_date).toDateString()}
+            dateEnd={new Date(card.end_date).toDateString()}
+            lat={card.lat}
+            long={card.long}
+            zoomToJobLocation={zoomToJobLocation}
           />
         )) 
       }

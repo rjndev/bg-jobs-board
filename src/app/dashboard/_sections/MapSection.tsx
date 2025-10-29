@@ -7,11 +7,12 @@ const MapComponent = dynamic(() => import("../_components/MapComponent"), {
 });
 
 type MapSectionProps = {
-  jobs : Job[]
+  jobs : Job[],
+  zoomTo : number[] | null
 }
 
-export default function MapSection({ jobs } : MapSectionProps) {
+export default function MapSection({ jobs, zoomTo } : MapSectionProps) {
   return (
-    <MapComponent jobs={jobs} />
+    <MapComponent zoomTo={zoomTo} jobs={jobs} />
   )
 }

@@ -3,11 +3,11 @@ export type Job = {
   facility: string;
   job: string;
   location: string;
-  startDate : Date;
-  endDate : Date;
+  start_date : Date;
+  end_date : Date;
   rate : string;
-  shiftType : "Day" | "Night" | "Evening" | "Flexible";
-  createdAt: Date;
+  shift_type : "Day" | "Night" | "Evening" | "Flexible";
+  created_at :  Date;
   state : string;
   lat : number;
   long : number;

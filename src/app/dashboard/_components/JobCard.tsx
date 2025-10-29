@@ -1,3 +1,6 @@
+import { FaMapMarkedAlt  } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+
 export type JobCardProps = {
   hospital: string;
   job : string;
@@ -6,9 +9,14 @@ export type JobCardProps = {
   shiftType: string;
   dateStart: string;
   dateEnd: string;
+  lat : number;
+  long : number;
+  zoomToJobLocation : (location: number[]) => void
 }
 
-export default function JobCard({ hospital, job, location, dateStart, dateEnd, rate, shiftType }: JobCardProps) {
+export default function JobCard({ hospital, job, location, dateStart, dateEnd, rate, shiftType, zoomToJobLocation, lat, long }: JobCardProps) {
+  
+  
   return (
     <div className="border hover:cursor-pointer border-gray-300 rounded-lg p-4 max-w-[300px] shadow-md hover:shadow-lg transition-shadow duration-300">
       <h2 className="text-xl font-bold mb-2">{hospital}</h2>
@@ -27,6 +35,11 @@ export default function JobCard({ hospital, job, location, dateStart, dateEnd, r
       <p className="text-gray-800">
         <span className="font-semibold">Shift Type</span>: {shiftType}
       </p>
+
+        <div className="flex gap-8 justify-center items-center mt-6">
+          <FaMapMarkedAlt onClick={() => zoomToJobLocation([lat, long])} className="hover:cursor-pointer font text-blue-700 hover:text-blue-500 transition-colors"  size={28} />
+          <MdEmail className="hover:cursor-pointer text-green-600 hover:text-green-500 transition-colors" size={28} />
+        </div>
     </div>
   );
 }
