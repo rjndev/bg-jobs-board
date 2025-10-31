@@ -32,7 +32,7 @@ type MapComponentProps = {
 export default function MapComponent({ jobs, zoomTo } : MapComponentProps) {
   return (
     <div className="h-full">  
-      <div className="w-full flex justify-center mt-4">
+      <div className="w-full flex justify-center mt-12">
         <MapContainer 
           center={[-33.8727, 151.2057]} zoom={12} style={{ height: "600px", width: "600px" }}>
           <TileLayer

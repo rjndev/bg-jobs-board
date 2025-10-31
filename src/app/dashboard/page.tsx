@@ -7,8 +7,6 @@ import { useJobs } from "@/hooks/jobsHooks";
 import { useState } from "react";
 import FilterSection from "./_sections/FilterSection";
 import { FiltersType } from "./_sections/FilterSection";
-import { ViewOptions } from "./_components/ViewOptions";
-
 
 export default function Dashboard(){
   const [filters , setFilters] = useState<FiltersType>({
@@ -37,12 +35,7 @@ export default function Dashboard(){
         setFilters={setFilters}
       />
 
-      <span className="flex justify-between mt-8 items-center px-8">
-        <h1 className="text-xl h-full text-center self-center">Jobs Available today! 🚀</h1>
-        <ViewOptions isList={isList} setIsList={setIsList} />
-      </span>
-
-      { tab == "home" && <HomeSection zoomToJobLocation={zoomToJobLocation} isList={isList} isLoading={isLoading} jobs={jobs} />}
+      { tab == "home" && <HomeSection setIsList={setIsList} zoomToJobLocation={zoomToJobLocation} isList={isList} isLoading={isLoading} jobs={jobs} />}
       { tab == "map" && <MapSection zoomTo={zoomTo} jobs={jobs!} />}
     </div>
   );      
