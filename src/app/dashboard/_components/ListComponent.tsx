@@ -11,7 +11,10 @@ export default function ListComponent({ job, zoomToJobLocation } : ListComponent
 
   console.log("Start date", job.start_date)
   return (
-    <tr className="border-gray-300 border-b">
+    <tr className="border-gray-300 border-b relative">
+      {
+        job.is_urgent ? <td className="text-center rounded-lg absolute left-3 top-4 animate-pulse border-gray-500 w-fit p-1 text-[11px] bg-purple-500 text-white font-semibold">URGENT</td> : <td></td>
+      }
       <th className="py-4 font-bold text-center">{job.job}</th>
       <td className="text-center">{job.location}</td>
       <td className="text-center">{`${new Date(job.start_date).toLocaleDateString()} - ${new Date(job.end_date).toLocaleDateString()}`}</td>

@@ -16,15 +16,7 @@ export default function CardSection({ cards, isLoading, zoomToJobLocation}: Card
         cards && cards.map((card, index) => (
           <JobCard 
             key={index}
-            hospital={card.facility}
-            job={card.job}
-            location={card.location}
-            rate={card.rate}
-            shiftType={card.shift_type}
-            dateStart={new Date(card.start_date).toDateString()}
-            dateEnd={new Date(card.end_date).toDateString()}
-            lat={card.lat}
-            long={card.long}
+            job={card}
             zoomToJobLocation={zoomToJobLocation}
           />
         )) 

@@ -1,6 +1,6 @@
 export const titleOptions = [
   { value: "all", label: "All" },
-  { value: "emergency", label: "Emergency" },
+  { value: "Emergency", label: "Emergency" },
   { value: "ED", label: "ED" },
   { value: "GP ED", label: "GP ED" },
   { value: "GP A", label: "GP A" },
