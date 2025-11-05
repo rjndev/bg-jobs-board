@@ -11,11 +11,13 @@ export async function GET(request : NextRequest) {
   const job = request.nextUrl.searchParams.get("job");
   const location = request.nextUrl.searchParams.get("location");
   const shiftType = request.nextUrl.searchParams.get("shiftType");
-  const dateStart = request.nextUrl.searchParams.get("dateStart");
-  const dateEnd = request.nextUrl.searchParams.get("dateEnd");
+  const startDate = request.nextUrl.searchParams.get("startDate");
+  const endDate = request.nextUrl.searchParams.get("endDate");
   const limitParam = request.nextUrl.searchParams.get("limit");
-  const state = request.nextUrl.searchParams.get("state")
-  const title = request.nextUrl.searchParams.get("title")
+  const state = request.nextUrl.searchParams.get("state");
+  const title = request.nextUrl.searchParams.get("title");
+
+  console.log("dateStart", startDate);
 
   const limit = limitParam ? parseInt(limitParam) : 20;
 
@@ -33,12 +35,12 @@ export async function GET(request : NextRequest) {
     query = query.eq("shiftType", shiftType);
   }
 
-  if (dateStart) {
-    query = query.gte("dateStart", dateStart);
+  if (startDate) {
+    query = query.gte("start_date", startDate);
   }
 
-  if (dateEnd) {
-    query = query.lte("dateEnd", dateEnd);
+  if (endDate) {
+    query = query.lte("end_date", endDate);
   }
 
   if (state) {
@@ -48,6 +50,7 @@ export async function GET(request : NextRequest) {
   if (title) {
     query = query.eq("title", title)
   }
+  
 
   console.log("Job ", job)
 
