@@ -10,6 +10,12 @@ export type CardSectionProps = {
 
 export default function CardSection({ cards, isLoading, zoomToJobLocation}: CardSectionProps) {
 
+  if(isLoading) return (
+    <div className="w-full flex justify-center items-center mt-24 h-full">
+      <AiOutlineLoading3Quarters className="animate-spin inline-block mx-auto" size={30} />
+    </div>
+  )
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto w-fit">
       {

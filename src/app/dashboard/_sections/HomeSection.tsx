@@ -21,12 +21,6 @@ export default function HomeSection({jobs, isLoading, isList, zoomToJobLocation,
     </div>
   )
 
-  if(isLoading) return (
-    <div className="w-full flex justify-center items-center mt-24 h-full">
-      <AiOutlineLoading3Quarters className="animate-spin inline-block mx-auto" size={30} />
-    </div>
-  )
-
   return (
     <div>
       <span className="flex justify-between mt-8 items-center px-8">
