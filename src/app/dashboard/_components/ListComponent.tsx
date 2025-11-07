@@ -17,7 +17,7 @@ export default function ListComponent({ job, zoomToJobLocation } : ListComponent
       }
       <th className="py-4 font-bold text-center">{job.job}</th>
       <td className="text-center">{job.location}</td>
-      <td className="text-center">{`${new Date(job.start_date).toLocaleDateString()} - ${new Date(job.end_date).toLocaleDateString()}`}</td>
+      <td className="text-center">{`${new Date(job.start_date).toLocaleDateString("en-GB")} - ${new Date(job.end_date).toLocaleDateString("en-GB")}`}</td>
       <td className="text-center">{job.rate}</td>
       <td className="text-center">{job.shift_type}</td>
       <td>

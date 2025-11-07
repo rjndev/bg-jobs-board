@@ -21,7 +21,7 @@ export default function JobCard({ job, zoomToJobLocation }: JobCardProps) {
         <span className="font-semibold">Location</span>: {job.location}
       </p>
       <p className="text-gray-800">
-        <span className="font-semibold">Date</span>: {job.start_date} -- {job.end_date}
+        <span className="font-semibold">Date</span>: {new Date(job.start_date).toLocaleDateString("en-GB")} -- {new Date(job.end_date).toLocaleDateString("en-GB")}
       </p>
       <p className="text-gray-800">
         <span className="font-semibold">Rate</span>: {job.rate}
