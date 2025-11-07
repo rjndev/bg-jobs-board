@@ -20,8 +20,6 @@ type FilterSectionProps = {
 }
 
 export default function FilterSection({filters , setFilters} : FilterSectionProps) {
-  const { searchTerm, setSearchTerm, debouncedTerm } = useSearch();
-
   const handleDateChange = (field: 'startDate' | 'endDate') => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => {
       if (!prev) return filters;
