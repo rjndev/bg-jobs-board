@@ -12,4 +12,5 @@ export type Job = {
   lat : number;
   long : number;
   is_urgent : boolean;
+  title : string;
 }

@@ -3,6 +3,7 @@ import DateFilter from "../_components/DateFilter";
 import { titleOptions, stateOptions } from "../_data/constants";
 import SearchFilter from "../_components/SearchFilter";
 import { Dispatch, SetStateAction } from "react";
+import { useSearch } from "@/hooks/searchHooks";
 
 export type FiltersType = {
   job?: string | undefined,
@@ -19,6 +20,8 @@ type FilterSectionProps = {
 }
 
 export default function FilterSection({filters , setFilters} : FilterSectionProps) {
+  const { searchTerm, setSearchTerm, debouncedTerm } = useSearch();
+
   const handleDateChange = (field: 'startDate' | 'endDate') => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => {
       if (!prev) return filters;
@@ -45,7 +48,7 @@ export default function FilterSection({filters , setFilters} : FilterSectionProp
         onChangeHandler={handleDateChange('endDate')} 
         title="End Date" 
       />
-      <SearchFilter title="Keyword" />
+      <SearchFilter setFilters={setFilters} title="Keyword" />
     </div>
   );
 }
