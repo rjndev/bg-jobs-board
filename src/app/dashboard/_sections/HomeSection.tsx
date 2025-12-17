@@ -23,10 +23,10 @@ export default function HomeSection({jobs, isLoading, isList, zoomToJobLocation,
 
   return (
     <div>
-      <span className="flex justify-between mt-8 items-center px-8">
+      {/* <span className="flex justify-between mt-8 items-center px-8">
         <h1 className="text-xl h-full text-center self-center">Jobs Available today! 🚀</h1>
           <ViewOptions isList={isList} setIsList={setIsList} />
-      </span>
+      </span> */}
       
       <div className="flex flex-col gap-12 justify-center items-center p-8 mt-4 pb-20">
         { isList ? 

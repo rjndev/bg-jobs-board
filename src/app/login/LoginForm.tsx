@@ -27,13 +27,13 @@ export default function LoginForm() {
       <h1 className="font-bold text-4xl mt-8 mb-4">Welcome Back!👋</h1>
       <h2 className="text-lg">Sign in to see your next Locum jobs now!</h2>
 
-      <div className="flex flex-col gap-4 mt-4">
+      <div className="flex-col grid grid-rows-2 gap-4 mt-4">
         <span className="flex gap-4 items-center justify-between">
           <label htmlFor="username" className="font-semibold text-lg">Email</label>
           <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" id="username" className="border border-gray-300 rounded-md py-1 px-2 transition-all duration-300 ease-in-out focus:border-blue-500 focus:ring-[1px] focus:ring-blue-500 outline-none" placeholder="sample@mail.com" />
         </span>
 
-        <span className="flex gap-4 items-center justify-center">
+        <span className="flex gap-4 items-center justify-between">
           <label htmlFor="password" className="font-semibold text-lg">Password</label>
           <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" id="password" className="border border-gray-300 rounded-md py-1 px-2 transition-all duration-300 ease-in-out focus:border-blue-500 focus:ring-[1px] focus:ring-blue-500 outline-none" placeholder="••••••••" />
         </span>
