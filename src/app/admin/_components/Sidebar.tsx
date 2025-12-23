@@ -1,12 +1,14 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { FiUsers, FiBriefcase } from "react-icons/fi";
+import { FiUsers, FiBriefcase, FiLogOut } from "react-icons/fi";
+import { useAuth } from "@/hooks/authHooks";
 
 export function Sidebar() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentTab = searchParams.get("tab") || "jobs";
+  const { handleSignout } = useAuth();
 
   const handleTabChange = (tab: "jobs" | "doctors") => {
     router.push(`/admin?tab=${tab}`);
@@ -46,6 +48,19 @@ export function Sidebar() {
           className={currentTab === "doctors" ? "text-blue-600" : "text-gray-600"}
         />
         <p className="text-xs text-center">Doctors</p>
+      </button>
+
+      {/* Sign Out Button */}
+      <button
+        onClick={handleSignout}
+        className="flex flex-col gap-2 items-center justify-center p-3 rounded-lg transition-all hover:bg-red-50 border border-transparent hover:border-red-400 mt-auto"
+        title="Sign Out"
+      >
+        <FiLogOut
+          size={24}
+          className="text-gray-600 hover:text-red-600"
+        />
+        <p className="text-xs text-center">Sign Out</p>
       </button>
     </div>
   );

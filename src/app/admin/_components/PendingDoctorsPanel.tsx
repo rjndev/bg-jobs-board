@@ -2,77 +2,55 @@
 
 import { useState } from "react";
 import { FiCheck, FiX, FiUser, FiMail, FiPhone, FiMapPin, FiCalendar } from "react-icons/fi";
+import { useUnapprovedDoctors } from "@/hooks/doctorsHooks";
 
 interface PendingDoctor {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  specialization: string;
+  phone?: string;
   licenseNumber: string;
-  hospital?: string;
-  location: string;
-  yearsOfExperience: number;
+  location?: string;
   createdAt: string;
-  documentUrl?: string;
 }
 
-// Mock data - replace with actual API call
-const MOCK_PENDING_DOCTORS: PendingDoctor[] = [
-  {
-    id: "1",
-    name: "Dr. Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "+1 (555) 123-4567",
-    specialization: "Cardiology",
-    licenseNumber: "MD-001234",
-    hospital: "City Medical Center",
-    location: "New York, NY",
-    yearsOfExperience: 5,
-    createdAt: "2025-12-10T14:30:00Z",
-  },
-  {
-    id: "2",
-    name: "Dr. Michael Chen",
-    email: "michael.chen@email.com",
-    phone: "+1 (555) 987-6543",
-    specialization: "Neurology",
-    licenseNumber: "MD-005678",
-    hospital: "General Hospital",
-    location: "Los Angeles, CA",
-    yearsOfExperience: 8,
-    createdAt: "2025-12-09T10:15:00Z",
-  },
-  {
-    id: "3",
-    name: "Dr. Emily Rodriguez",
-    email: "emily.rodriguez@email.com",
-    phone: "+1 (555) 456-7890",
-    specialization: "Pediatrics",
-    licenseNumber: "MD-009012",
-    hospital: "Children's Hospital",
-    location: "Miami, FL",
-    yearsOfExperience: 3,
-    createdAt: "2025-12-08T09:00:00Z",
-  },
-];
-
 export function PendingDoctorsPanel() {
-  const [doctors] = useState<PendingDoctor[]>(MOCK_PENDING_DOCTORS);
+  const { doctors: rawDoctors, isLoading, error, refetch } = useUnapprovedDoctors();
+  
+  // Map database fields to display format
+  const doctors: PendingDoctor[] = rawDoctors.map(doc => ({
+    id: doc.id,
+    name: `${doc.first_name} ${doc.last_name}`,
+    email: doc.email,
+    phone: doc.phone,
+    licenseNumber: doc.dr_number,
+    location: doc.location,
+    createdAt: doc.created_at,
+  }));
   const [selectedDoctor, setSelectedDoctor] = useState<PendingDoctor | null>(null);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
   const handleApprove = async (doctorId: string) => {
     setActionInProgress(doctorId);
     try {
-      // Replace with actual API call
-      console.log("Approving doctor:", doctorId);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // Remove from list
-      // setDoctors(doctors.filter(d => d.id !== doctorId));
+      const response = await fetch(`/api/doctors/${doctorId}/approve`, {
+        method: "PATCH",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to approve doctor");
+      }
+
+      const result = await response.json();
+      console.log("Doctor approved:", result);
+      
+      // Close detail panel and refresh list
       setSelectedDoctor(null);
+      await refetch();
     } catch (error) {
       console.error("Error approving doctor:", error);
+      alert(`Failed to approve doctor: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setActionInProgress(null);
     }
@@ -102,6 +80,22 @@ export function PendingDoctorsPanel() {
     });
   };
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 w-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={refetch}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
@@ -117,7 +111,11 @@ export function PendingDoctorsPanel() {
       <div className="flex h-[calc(100vh-120px)]">
         {/* Doctors List */}
         <div className="w-1/3 bg-white border-r border-gray-200 overflow-y-auto">
-          {doctors.length === 0 ? (
+          {isLoading ? (
+            <div className="p-8 text-center text-gray-500">
+              <p>Loading doctors...</p>
+            </div>
+          ) : doctors.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <p>No pending applications</p>
             </div>
@@ -142,7 +140,7 @@ export function PendingDoctorsPanel() {
                         {doctor.name}
                       </h3>
                       <p className="text-sm text-gray-600 truncate">
-                        {doctor.specialization}
+                        {doctor.email}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         Applied: {formatDate(doctor.createdAt)}
@@ -170,7 +168,7 @@ export function PendingDoctorsPanel() {
                       {selectedDoctor.name}
                     </h2>
                     <p className="text-gray-600 mt-1">
-                      {selectedDoctor.specialization}
+                      {selectedDoctor.email}
                     </p>
                     <p className="text-sm text-gray-500 mt-2">
                       Applied on {formatDate(selectedDoctor.createdAt)}
@@ -216,7 +214,7 @@ export function PendingDoctorsPanel() {
                     <FiPhone className="text-blue-600" size={18} />
                     <p className="text-sm font-semibold text-gray-700">Phone</p>
                   </div>
-                  <p className="text-gray-600">{selectedDoctor.phone}</p>
+                  <p className="text-gray-600">{selectedDoctor.phone || "Not provided"}</p>
                 </div>
 
                 {/* License Number */}
@@ -233,17 +231,7 @@ export function PendingDoctorsPanel() {
                     <FiMapPin className="text-blue-600" size={18} />
                     <p className="text-sm font-semibold text-gray-700">Location</p>
                   </div>
-                  <p className="text-gray-600">{selectedDoctor.location}</p>
-                </div>
-              </div>
-
-              {/* Additional Info */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-                <div>
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Hospital</p>
-                  <p className="text-gray-600">
-                    {selectedDoctor.hospital || "Not specified"}
-                  </p>
+                  <p className="text-gray-600">{selectedDoctor.location || "Not provided"}</p>
                 </div>
               </div>
             </div>

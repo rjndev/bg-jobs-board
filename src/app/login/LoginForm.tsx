@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/authHooks";
 import { redirect } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Image from "next/image";
+import { createClient } from "@/utlis/supabase/supabase-client";
 
 
 
@@ -17,8 +18,27 @@ export default function LoginForm() {
     e.preventDefault()
     const res = await handleLogin(email, password)
 
-    if (res?.ok)
-      redirect("/dashboard")
+    if (res?.ok) {
+      // Check if user is admin
+      const supabase = createClient();
+      const { data: claims } = await supabase.auth.getClaims();
+      
+      if (claims?.claims?.email) {
+        const { data: doctor } = await supabase
+          .from("doctors")
+          .select("is_admin")
+          .eq("email", claims.claims.email)
+          .maybeSingle();
+        
+        if (doctor?.is_admin) {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/dashboard";
+        }
+      } else {
+        window.location.href = "/dashboard";
+      }
+    }
   }
 
   return (

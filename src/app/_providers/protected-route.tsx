@@ -4,9 +4,10 @@ import { createClient } from "@/utlis/supabase/supabase-server";
 type RouteProps = {
   checkAdmin?: boolean;
   requireApproval?: boolean;
+  blockAdmin?: boolean;
 };
 
-export default async function ProtectedRoute({ children, checkAdmin, requireApproval }: { children: React.ReactNode; checkAdmin?: boolean; requireApproval?: boolean }) {
+export default async function ProtectedRoute({ children, checkAdmin, requireApproval, blockAdmin }: { children: React.ReactNode; checkAdmin?: boolean; requireApproval?: boolean; blockAdmin?: boolean }) {
   // const { status } = useSession();
   const supabase = await createClient()
   const { data, error } = await supabase.auth.getClaims();
@@ -30,11 +31,17 @@ export default async function ProtectedRoute({ children, checkAdmin, requireAppr
     return redirect("/login");
   }
 
+  // If this is an admin-only route, redirect non-admins
   if (checkAdmin) {
     if (!doctor?.is_admin) {
       console.error("Admin check failed:", doctorError);
       return redirect("/dashboard");
     }
+  }
+
+  // If this route should block admins, redirect them to admin dashboard
+  if (blockAdmin && doctor?.is_admin) {
+    return redirect("/admin");
   }
 
   // If approval is required and user is not admin, gate access

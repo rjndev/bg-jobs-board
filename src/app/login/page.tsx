@@ -9,7 +9,18 @@ export default async function Login() {
   const { data, error: authError } = await supabase.auth.getClaims();
 
   if(!authError && data?.claims) {
-    redirect("/dashboard")
+    // Check if user is admin
+    const { data: doctor } = await supabase
+      .from("doctors")
+      .select("is_admin")
+      .eq("email", data.claims.email)
+      .maybeSingle();
+    
+    if (doctor?.is_admin) {
+      redirect("/admin");
+    } else {
+      redirect("/dashboard");
+    }
   }
 
   return (
