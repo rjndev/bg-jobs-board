@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Job } from "@/types/job-types";
 import { useJobs } from "@/hooks/jobsHooks";
 import { PendingDoctorsPanel } from "./_components/PendingDoctorsPanel";
+import { JobUploadPanel } from "./_components/JobUploadPanel";
 
 export default function AdminPage() {
   const searchParams = useSearchParams();
@@ -16,6 +17,20 @@ export default function AdminPage() {
 
   if (tab === "doctors") {
     return <PendingDoctorsPanel />;
+  }
+
+  if (tab === "upload") {
+    return (
+      <div className="min-h-screen bg-gray-50 w-full">
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="px-8 py-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <span className="text-sm text-gray-600">Upload job files to parse and review</span>
+          </div>
+        </header>
+        <JobUploadPanel />
+      </div>
+    );
   }
 
   return (
