@@ -40,6 +40,7 @@ export async function POST(req: Request) {
       email,
       password_hash: passwordHash,
       dr_number: drNumber,
+      is_approved: false,
       created_at: new Date().toISOString(),
     }).select("id").maybeSingle();
 

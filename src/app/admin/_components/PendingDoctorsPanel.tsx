@@ -245,15 +245,6 @@ export function PendingDoctorsPanel() {
                     {selectedDoctor.hospital || "Not specified"}
                   </p>
                 </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FiCalendar className="text-blue-600" size={18} />
-                    <p className="text-sm font-semibold text-gray-700">
-                      Years of Experience
-                    </p>
-                  </div>
-                  <p className="text-gray-600">{selectedDoctor.yearsOfExperience} years</p>
-                </div>
               </div>
             </div>
           ) : (
