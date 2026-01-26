@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { FiUsers, FiBriefcase, FiLogOut } from "react-icons/fi";
+import { FiUsers, FiBriefcase, FiLogOut, FiUpload } from "react-icons/fi";
 import { useAuth } from "@/hooks/authHooks";
 
 export function Sidebar() {
@@ -10,7 +10,7 @@ export function Sidebar() {
   const currentTab = searchParams.get("tab") || "jobs";
   const { handleSignout } = useAuth();
 
-  const handleTabChange = (tab: "jobs" | "doctors") => {
+  const handleTabChange = (tab: "jobs" | "doctors" | "upload") => {
     router.push(`/admin?tab=${tab}`);
   };
 
@@ -48,6 +48,23 @@ export function Sidebar() {
           className={currentTab === "doctors" ? "text-blue-600" : "text-gray-600"}
         />
         <p className="text-xs text-center">Doctors</p>
+      </button>
+
+      {/* Upload Jobs Tab */}
+      <button
+        onClick={() => handleTabChange("upload")}
+        className={`flex flex-col gap-2 items-center justify-center p-3 rounded-lg transition-all ${
+          currentTab === "upload"
+            ? "bg-blue-100 border border-blue-400"
+            : "hover:bg-gray-100"
+        }`}
+        title="Upload Jobs"
+      >
+        <FiUpload
+          size={24}
+          className={currentTab === "upload" ? "text-blue-600" : "text-gray-600"}
+        />
+        <p className="text-xs text-center">Upload</p>
       </button>
 
       {/* Sign Out Button */}

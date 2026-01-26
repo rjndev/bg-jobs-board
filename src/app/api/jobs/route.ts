@@ -58,13 +58,32 @@ export async function GET(request: NextRequest) {
     return Response.json({ count: jobs.length, jobs }, { status: 200 });
   }
 
-  // If no keyword search, use regular query
+  // If no keyword search, use regular query with all filters
   let query = supabase.from("jobs").select("*").order("created_at", { ascending: false });
 
   if (job) {
     query = query.ilike("job", `%${job}%`);
   }
-  // ...existing query conditions...
+  if (location) {
+    query = query.ilike("location", `%${location}%`);
+  }
+  if (shiftType) {
+    query = query.eq("shift_type", shiftType);
+  }
+  if (startDate) {
+    query = query.gte("start_date", startDate);
+  }
+  if (endDate) {
+    query = query.lte("end_date", endDate);
+  }
+  if (state && state !== "all") {
+    query = query.eq("state", state.toLowerCase());
+  }
+  if (title && title !== "all") {
+    // Title corresponds to parsed category string
+    query = query.eq("title", title);
+  }
+
   query = query.limit(limit);
 
   const { data, error } = await query;

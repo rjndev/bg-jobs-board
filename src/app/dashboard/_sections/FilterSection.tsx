@@ -31,11 +31,11 @@ export default function FilterSection({filters , setFilters} : FilterSectionProp
   return (
     <div className="flex xl:flex-row gap-8 flex-col mt-4 w-full justify-between px-8">
       <DropdownFilter 
-        onChangeHandler={(e) => setFilters(prev => prev ? {...prev, title : e.target.value} : filters)} 
+        onChangeHandler={(value) => setFilters(prev => prev ? {...prev, title : value} : filters)} 
         title="Title" 
         options={titleOptions} />
       <DropdownFilter 
-        onChangeHandler={(e) => setFilters(prev => prev ? {...prev, state : e.target.value} : filters)}
+        onChangeHandler={(value) => setFilters(prev => prev ? {...prev, state : value} : filters)}
         title="State" 
         options={stateOptions} />
       <DateFilter 
