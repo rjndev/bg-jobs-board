@@ -1,19 +1,128 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Job } from "@/types/job-types";
 import { useJobs } from "@/hooks/jobsHooks";
 import { PendingDoctorsPanel } from "./_components/PendingDoctorsPanel";
 import { JobUploadPanel } from "./_components/JobUploadPanel";
+
+type JobUpdatePayload = {
+  title: string;
+  job: string;
+  location: string;
+  state: string;
+  shift_type: string;
+  rate: string;
+  start_date: string | null;
+  end_date: string | null;
+  is_urgent: boolean;
+  lat: number | null;
+  long: number | null;
+};
+
+const auStateToCode: Record<string, string> = {
+  "new south wales": "nsw",
+  "australian capital territory": "act",
+  "queensland": "qld",
+  "south australia": "sa",
+  "tasmania": "tas",
+  "victoria": "vic",
+  "western australia": "wa",
+  "northern territory": "nt",
+};
+
+async function geocodeLocationClient(location: string) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=au&q=${encodeURIComponent(
+    location
+  )}&limit=1`;
+
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "jobs-board-admin/1.0",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Geocode request failed");
+  }
+
+  const results = await res.json();
+  if (!Array.isArray(results) || results.length === 0) {
+    return { lat: null, long: null, state: "" };
+  }
+
+  const best = results[0];
+  const rawState = best.address?.state || best.address?.county || "";
+  const stateKey = rawState.toLowerCase();
+  const mappedState = auStateToCode[stateKey] || stateKey || "";
+
+  return {
+    lat: best.lat ? Number(best.lat) : null,
+    long: best.lon ? Number(best.lon) : null,
+    state: mappedState,
+  };
+}
 
 export default function AdminPage() {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab") || "jobs";
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { res, isLoading } = useJobs({});
+  const queryClient = useQueryClient();
   const jobs = res?.jobs || [];
+
+  const handleSave = async (payload: JobUpdatePayload) => {
+    if (!selectedJob) return;
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/jobs/${selectedJob.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to update job", await response.text());
+        return;
+      }
+
+      const { job } = await response.json();
+      setSelectedJob(job);
+      setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    } catch (error) {
+      console.error("Error updating job", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedJob || !window.confirm("Are you sure you want to delete this job?")) return;
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/jobs/${selectedJob.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        console.error("Failed to delete job", await response.text());
+        return;
+      }
+
+      setSelectedJob(null);
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    } catch (error) {
+      console.error("Error deleting job", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (tab === "doctors") {
     return <PendingDoctorsPanel />;
@@ -107,21 +216,37 @@ export default function AdminPage() {
                   {!isEditing ? (
                     <>
                       <button
+                        type="button"
                         onClick={() => setIsEditing(true)}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                       >
                         Edit
                       </button>
-                      <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                        Delete
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-70"
+                      >
+                        {isDeleting ? "Deleting..." : "Delete"}
                       </button>
                     </>
                   ) : (
                     <>
-                      <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        Save
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!selectedJob) return;
+                          const formEl = document.getElementById(`job-edit-${selectedJob.id}`) as HTMLFormElement | null;
+                          formEl?.requestSubmit();
+                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-70"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? "Saving..." : "Save"}
                       </button>
                       <button
+                        type="button"
                         onClick={() => setIsEditing(false)}
                         className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
                       >
@@ -133,7 +258,12 @@ export default function AdminPage() {
               </div>
 
               {isEditing ? (
-                <JobEditForm job={selectedJob} />
+                <JobEditForm
+                  job={selectedJob}
+                  formId={`job-edit-${selectedJob.id}`}
+                  onSubmit={handleSave}
+                  isSaving={isSaving}
+                />
               ) : (
                 <JobDetailsView job={selectedJob} />
               )}
@@ -166,19 +296,21 @@ export default function AdminPage() {
 
 // Job Details View Component
 function JobDetailsView({ job }: { job: Job }) {
+  const formatDate = (value?: string | null) => {
+    return value ? new Date(value).toLocaleDateString() : "—";
+  };
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
       <DetailRow label="Title" value={job.title} />
       <DetailRow label="Job Type" value={job.job} />
-      <DetailRow label="Facility" value={job.facility} />
       <DetailRow label="Location" value={job.location} />
       <DetailRow label="State" value={job.state} />
       <DetailRow label="Shift Type" value={job.shift_type} />
       <DetailRow label="Rate" value={`$${job.rate}`} />
-      <DetailRow label="Start Date" value={new Date(job.start_date).toLocaleDateString()} />
-      <DetailRow label="End Date" value={new Date(job.end_date).toLocaleDateString()} />
+      <DetailRow label="Start Date" value={formatDate(job.start_date)} />
+      <DetailRow label="End Date" value={formatDate(job.end_date)} />
       <DetailRow label="Urgent" value={job.is_urgent ? "Yes" : "No"} />
-      <DetailRow label="Created At" value={new Date(job.created_at).toLocaleString()} />
       <div className="pt-4 border-t border-gray-200">
         <p className="text-sm font-semibold text-gray-700 mb-2">Coordinates</p>
         <p className="text-sm text-gray-600">Latitude: {job.lat}</p>
@@ -189,14 +321,110 @@ function JobDetailsView({ job }: { job: Job }) {
 }
 
 // Job Edit Form Component
-function JobEditForm({ job }: { job: Job }) {
+function JobEditForm({
+  job,
+  formId,
+  onSubmit,
+  isSaving,
+}: {
+  job: Job;
+  formId: string;
+  onSubmit: (payload: JobUpdatePayload) => void;
+  isSaving: boolean;
+}) {
+  const startDateValue = job.start_date ? job.start_date.split("T")[0] : "";
+  const endDateValue = job.end_date ? job.end_date.split("T")[0] : "";
+  const [locationValue, setLocationValue] = useState(job.location || "");
+  const [stateValue, setStateValue] = useState(job.state || "");
+  const [latValue, setLatValue] = useState(job.lat?.toString() ?? "");
+  const [longValue, setLongValue] = useState(job.long?.toString() ?? "");
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLocationValue(job.location || "");
+    setStateValue(job.state || "");
+    setLatValue(job.lat?.toString() ?? "");
+    setLongValue(job.long?.toString() ?? "");
+    setGeoError(null);
+  }, [job]);
+
+  const handleGeocode = async () => {
+    if (!locationValue.trim()) return;
+    setGeoLoading(true);
+    setGeoError(null);
+    try {
+      const geo = await geocodeLocationClient(locationValue.trim());
+      if (geo.state) setStateValue(geo.state);
+      if (geo.lat !== null) setLatValue(geo.lat.toString());
+      if (geo.long !== null) setLongValue(geo.long.toString());
+    } catch (error) {
+      console.error("Geocode failed", error);
+      setGeoError("Could not geolocate this address");
+    } finally {
+      setGeoLoading(false);
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const parseNumber = (value: FormDataEntryValue | null): number | null => {
+      if (value === null) return null;
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+
+    const payload: JobUpdatePayload = {
+      title: (formData.get("title") as string) || "",
+      job: (formData.get("job") as string) || "",
+      location: locationValue,
+      state: stateValue,
+      shift_type: (formData.get("shift_type") as string) || "",
+      rate: (formData.get("rate") as string) || "",
+      start_date: ((formData.get("start_date") as string) || "") || null,
+      end_date: ((formData.get("end_date") as string) || "") || null,
+      is_urgent: formData.get("is_urgent") === "on",
+      lat: parseNumber(latValue),
+      long: parseNumber(longValue),
+    };
+
+    onSubmit(payload);
+  };
+
   return (
-    <form className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+    <form
+      id={formId}
+      onSubmit={handleSubmit}
+      className="bg-white rounded-lg border border-gray-200 p-6 space-y-4"
+    >
       <FormField label="Title" name="title" defaultValue={job.title} />
       <FormField label="Job Type" name="job" defaultValue={job.job} />
-      <FormField label="Facility" name="facility" defaultValue={job.facility} />
-      <FormField label="Location" name="location" defaultValue={job.location} />
-      <FormField label="State" name="state" defaultValue={job.state} />
+      <FormField
+        label="Location"
+        name="location"
+        value={locationValue}
+        onChange={(e) => setLocationValue(e.target.value)}
+        disabled={isSaving}
+      />
+      <div className="flex items-center gap-3">
+        <FormField
+          label="State"
+          name="state"
+          value={stateValue}
+          disabled
+        />
+        <button
+          type="button"
+          onClick={handleGeocode}
+          disabled={isSaving || geoLoading || !locationValue.trim()}
+          className="mt-6 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60"
+        >
+          {geoLoading ? "Geocoding..." : "Update from location"}
+        </button>
+      </div>
+      {geoError && <p className="text-sm text-red-600">{geoError}</p>}
       <FormField label="Rate" name="rate" defaultValue={job.rate} type="text" />
       
       <div>
@@ -219,13 +447,13 @@ function JobEditForm({ job }: { job: Job }) {
         label="Start Date" 
         name="start_date" 
         type="date" 
-        defaultValue={job.start_date.split('T')[0]} 
+        defaultValue={startDateValue} 
       />
       <FormField 
         label="End Date" 
         name="end_date" 
         type="date" 
-        defaultValue={job.end_date.split('T')[0]} 
+        defaultValue={endDateValue} 
       />
 
       <div className="flex items-center">
@@ -233,6 +461,7 @@ function JobEditForm({ job }: { job: Job }) {
           type="checkbox"
           name="is_urgent"
           defaultChecked={job.is_urgent}
+          disabled={isSaving}
           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
         <label className="ml-2 block text-sm text-gray-700">
@@ -241,8 +470,24 @@ function JobEditForm({ job }: { job: Job }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Latitude" name="lat" type="number" step="any" defaultValue={job.lat.toString()} />
-        <FormField label="Longitude" name="long" type="number" step="any" defaultValue={job.long.toString()} />
+        <FormField
+          label="Latitude"
+          name="lat"
+          type="number"
+          step="any"
+          value={latValue}
+          onChange={(e) => setLatValue(e.target.value)}
+          disabled={isSaving}
+        />
+        <FormField
+          label="Longitude"
+          name="long"
+          type="number"
+          step="any"
+          value={longValue}
+          onChange={(e) => setLongValue(e.target.value)}
+          disabled={isSaving}
+        />
       </div>
     </form>
   );
@@ -263,26 +508,40 @@ function FormField({
   name, 
   type = "text", 
   defaultValue,
-  step
+  value,
+  onChange,
+  step,
+  disabled,
 }: { 
   label: string; 
   name: string; 
   type?: string; 
-  defaultValue: string;
+  defaultValue?: string;
+  value?: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   step?: string;
+  disabled?: boolean;
 }) {
+  const inputProps = {
+    type,
+    name,
+    step,
+    disabled,
+    className:
+      "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+    onChange,
+  } as const;
+
   return (
     <div>
       <label className="block text-sm font-semibold text-gray-700 mb-1">
         {label}
       </label>
-      <input
-        type={type}
-        name={name}
-        defaultValue={defaultValue}
-        step={step}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      {value !== undefined ? (
+        <input {...inputProps} value={value} />
+      ) : (
+        <input {...inputProps} defaultValue={defaultValue} />
+      )}
     </div>
   );
 }
